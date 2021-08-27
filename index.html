@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="styles.css">
+    <title>Todo List</title>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <h1>My Todo List</h1>
+            <input type="text" placeholder="enter your todo" v-model.trim="input" name="todo" @keydown.enter="addTodo">
+            <button class="addBtn" @click="addTodo">add Todo</button>
+        </div>
+        <ul style="padding-top: 1rem;">
+            <todo-item v-for="(todo, index) in todos" :key="todo.text" :todo="todo" @checked="todo.completed = !todo.completed" @delete="deleteTodo(index)"></todo-item>
+        </ul>
+    </div>
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    input: '',
+                    todos: []
+                }
+            },
+            methods: {
+                addTodo() {
+                    if(this.input) {
+                        this.todos.push({ text: this.input, completed: false })
+                        this.input = ''
+                    }
+                },
+                deleteTodo(index) {
+                    this.todos.splice(index, 1)
+                }
+            },
+        })
+
+        app.component("TodoItem", {
+            template: `
+            <li @click="$emit('checked')" :class="{ 'checked' : todo.completed }">
+                {{todo.text}} 
+                <button class="close" @click="$emit('delete')">X</button>
+            </li>
+            `,
+            props: ['todo', 'index']
+        })
+
+        app.mount("#app")
+    </script>
+</body>
+</html>
